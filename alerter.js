@@ -22,5 +22,12 @@ function alertInCelcius(farenheit) {
 
 alertInCelcius(400.5); // This should fail
 alertInCelcius(303.6); // This should fail
+
+//Check failure count increment
+const expectedFailures = 2;
+if (alertFailureCount !== expectedFailures) {
+    throw new Error(`Expected ${expectedFailures} failures, but got ${alertFailureCount}`);
+}
+
 console.log(`${alertFailureCount} alerts failed.`); // This should fail
 console.log('All is well (maybe!)');
