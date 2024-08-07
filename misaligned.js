@@ -1,5 +1,6 @@
-const {expect} = require('chai');
-const { execSync } = require('child_process');
+const { expect } = require('chai');
+const { Writable } = require('stream');
+const { Console } = require('console');
 
 function print_color_map() {
     const majorColors = ["White", "Red", "Black", "Yellow", "Violet"];
@@ -14,11 +15,26 @@ function print_color_map() {
     return majorColors.length * minorColors.length;
 }
 
+// Capture the console output
+const output = [];
+const captureStream = new Writable({
+    write(chunk, encoding, callback) {
+        output.push(chunk.toString());
+        callback();
+    }
+});
+const customConsole = new Console({ stdout: captureStream });
+
+const originalConsoleLog = console.log;
+console.log = customConsole.log.bind(customConsole);
+
 const result = print_color_map();
-expect(result).equals(25);
+console.log = originalConsoleLog;
+expect(result).to.equal(25);
 
 const expectedOutput = `0 | White | Blue`;
 
-expect(execSync('node misaligned.js').toString().trim()).equals(expectedOutput);
+expect(output.join('').trim()).to.equal(expectedOutput);
 
 console.log('All is well (maybe!)');
+
